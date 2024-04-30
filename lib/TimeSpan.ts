@@ -50,7 +50,7 @@ export class TimeSpan {
     }
 
     set millisecondsMod(ms: number) {
-        this.value = this.secondsMod * 1000 + ms;
+        this.value = Math.floor(this.seconds) * 1000 + ms;
     }
 
     get seconds(): number {
@@ -66,7 +66,7 @@ export class TimeSpan {
     }
 
     set secondsMod(secs: number) {
-        this.seconds = Math.floor(this.minutesMod) * 60 + secs + this.millisecondsMod / 1000;
+        this.seconds = Math.floor(this.minutes) * 60 + secs + this.millisecondsMod / 1000;
     }
 
     set minutes(mins: number) {
@@ -82,7 +82,7 @@ export class TimeSpan {
     }
 
     set minutesMod(mins: number) {
-        this.minutes = Math.floor(this.hoursMod) * 60 + mins + this.secondsMod / 60;
+        this.minutes = Math.floor(this.hours) * 60 + mins + this.secondsMod / 60;
     }
 
     get hours(): number {
@@ -110,7 +110,7 @@ export class TimeSpan {
     }
 
     set daysMod(days: number) {
-        this.days = Math.floor(this.days) + days % 1 + this.hoursMod / 24;
+        this.days = days + this.hoursMod / 24;
     }
 
     setTime(days = 0, hrs = 0, mins = 0, secs = 0, ms = 0): void {
@@ -151,5 +151,13 @@ export class TimeSpan {
     divAssign(factor: number): TimeSpan {
         this.value /= factor;
         return this;
+    }
+
+    get string(): string {
+        return `${Math.floor(this.days).toString().padStart(1, "0")}:${Math.floor(this.hoursMod).toString().padStart(2, "0")}:${Math.floor(this.minutesMod).toString().padStart(2, "0")}:${Math.floor(this.secondsMod).toString().padStart(2, "0")}.${Math.floor(this.millisecondsMod).toString().padStart(4, "0")}`;
+    }
+
+    toString(): string {
+        return this.string;
     }
 }
