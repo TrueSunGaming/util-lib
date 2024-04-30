@@ -37,6 +37,10 @@ export class TimeSpan {
         return this.value;
     }
 
+    get millisecondsMod(): number {
+        return this.value % 1000;
+    }
+
     set milliseconds(ms: number) {
         this.value = ms;
     }
@@ -49,12 +53,20 @@ export class TimeSpan {
         return this.value / 1000;
     }
 
+    get secondsMod(): number {
+        return this.seconds % 60;
+    }
+
     set minutes(mins: number) {
         this.seconds = mins * 60;
     }
 
     get minutes(): number {
         return this.seconds / 60;
+    }
+
+    get minutesMod(): number {
+        return this.minutes % 60;
     }
 
     set hours(hrs: number) {
@@ -65,11 +77,19 @@ export class TimeSpan {
         return this.minutes / 60;
     }
 
+    get hoursMod(): number {
+        return this.hours % 24;
+    }
+
     set days(days: number) {
         this.hours = days * 24;
     }
 
     get days(): number {
         return this.hours 
+    }
+
+    setTime(days = 0, hrs = 0, mins = 0, secs = 0, ms = 0): void {
+        this.value = ms + (secs + (mins + (hrs + days * 24) * 60) * 60) * 1000;
     }
 }
