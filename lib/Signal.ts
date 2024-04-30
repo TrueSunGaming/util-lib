@@ -3,6 +3,7 @@ import { TimeSpan } from "./TimeSpan";
 
 export class Signal<T extends any[] = []> {
     private m_Emitted = false;
+    private m_LastValue: T | null = null;
     private listeners: GenericFunc<T>[] = [];
 
     isConnected(func: GenericFunc<T>): boolean {
@@ -25,6 +26,7 @@ export class Signal<T extends any[] = []> {
         for (const i of this.listeners) i(...data);
 
         this.m_Emitted = true;
+        this.m_LastValue = data;
     }
 
     wait(timeout?: TimeSpan | number): Promise<T> {
@@ -54,7 +56,7 @@ export class Signal<T extends any[] = []> {
     static createFromTimeout(timeout: TimeSpan | number): Signal {
         const res: Signal = new Signal();
 
-        setTimeout(res.emit, timeout instanceof TimeSpan ? timeout.milliseconds : timeout);
+        setTimeout(res.emit, TimeSpan.numerify(timeout));
 
         return res;
     }
@@ -70,5 +72,9 @@ export class Signal<T extends any[] = []> {
 
     get emitted(): boolean {
         return this.m_Emitted;
+    }
+
+    get lastValue(): T | null {
+        return this.m_LastValue;
     }
 }

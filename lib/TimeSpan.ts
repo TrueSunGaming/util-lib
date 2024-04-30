@@ -1,4 +1,8 @@
-export class TimeSpan {
+export interface TimeConvertible {
+    milliseconds: number;
+}
+
+export class TimeSpan implements TimeConvertible {
     private value: number;
 
     constructor(ms: number) {
@@ -161,7 +165,7 @@ export class TimeSpan {
         return this.string;
     }
 
-    static numerify(time: TimeSpan | number): number {
-        return time instanceof TimeSpan ? time.milliseconds : time;
+    static numerify(time: TimeConvertible | number): number {
+        return typeof time == "object" ? time.milliseconds : time;
     }
 }
