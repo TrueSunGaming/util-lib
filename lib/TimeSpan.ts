@@ -29,8 +29,12 @@ export class TimeSpan {
         return new TimeSpan(date.getTime());
     }
 
+    static mixedToMilliseconds(days = 0, hrs = 0, mins = 0, secs = 0, ms = 0): number {
+        return ms + (secs + (mins + (hrs + days * 24) * 60) * 60) * 1000
+    }
+
     static fromMixed(days = 0, hrs = 0, mins = 0, secs = 0, ms = 0): TimeSpan {
-        return new TimeSpan(ms + (secs + (mins + (hrs + days * 24) * 60) * 60) * 1000);
+        return new TimeSpan(TimeSpan.mixedToMilliseconds(days, hrs, mins, secs, ms));
     }
 
     get milliseconds(): number {
@@ -45,8 +49,8 @@ export class TimeSpan {
         this.value = ms;
     }
 
-    set seconds(secs: number) {
-        this.value = secs * 1000;
+    set millisecondsMod(ms: number) {
+        this.value = this.secondsMod * 1000 + ms;
     }
 
     get seconds(): number {
@@ -55,6 +59,14 @@ export class TimeSpan {
 
     get secondsMod(): number {
         return this.seconds % 60;
+    }
+
+    set seconds(secs: number) {
+        this.value = secs * 1000;
+    }
+
+    set secondsMod(secs: number) {
+        this.seconds = Math.floor(this.minutesMod) * 60 + secs + this.millisecondsMod / 1000;
     }
 
     set minutes(mins: number) {
@@ -69,8 +81,8 @@ export class TimeSpan {
         return this.minutes % 60;
     }
 
-    set hours(hrs: number) {
-        this.minutes = hrs * 60;
+    set minutesMod(mins: number) {
+        this.minutes = Math.floor(this.hoursMod) * 60 + mins + this.secondsMod / 60;
     }
 
     get hours(): number {
@@ -81,15 +93,63 @@ export class TimeSpan {
         return this.hours % 24;
     }
 
+    set hours(hrs: number) {
+        this.minutes = hrs * 60;
+    }
+
+    set hoursMod(hrs: number) {
+        this.hours = Math.floor(this.days) * 24 + hrs + this.minutesMod / 60;
+    }
+
     set days(days: number) {
         this.hours = days * 24;
     }
 
     get days(): number {
-        return this.hours 
+        return this.hours / 24;
+    }
+
+    set daysMod(days: number) {
+        this.days = Math.floor(this.days) + days % 1 + this.hoursMod / 24;
     }
 
     setTime(days = 0, hrs = 0, mins = 0, secs = 0, ms = 0): void {
-        this.value = ms + (secs + (mins + (hrs + days * 24) * 60) * 60) * 1000;
+        this.value = TimeSpan.mixedToMilliseconds(days, hrs, mins, secs, ms);
+    }
+
+    add(other: TimeSpan): TimeSpan {
+        return new TimeSpan(this.value + other.value);
+    }
+
+    addAssign(other: TimeSpan): TimeSpan {
+        this.value += other.value;
+        return this;
+    }
+
+    sub(other: TimeSpan): TimeSpan {
+        return new TimeSpan(this.value - other.value);
+    }
+
+    subAssign(other: TimeSpan): TimeSpan {
+        this.value -= other.value;
+        return this;
+    }
+
+    mul(factor: number): TimeSpan {
+        return new TimeSpan(this.value * factor);
+    }
+
+    mulAssign(factor: number): TimeSpan {
+        this.value *= factor;
+        return this;
+    }
+
+    div(factor: number): TimeSpan {
+        return new TimeSpan(this.value / factor);
+    }
+
+    divAssign(factor: number): TimeSpan {
+        this.value /= factor;
+        return this;
     }
 }
