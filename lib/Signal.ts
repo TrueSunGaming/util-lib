@@ -51,4 +51,13 @@ export class Signal<T extends any[] = []> {
 
         return res;
     }
+
+    static createFromPromise<T>(promise: Promise<T>, fallbackValue?: T): Signal<[T | null, any]> {
+        const res: Signal<[T | null, any]> = new Signal();
+
+        promise.then((v) => res.emit(v, null));
+        promise.catch((r) => res.emit(fallbackValue ?? null, r));
+
+        return res;
+    }
 }
