@@ -1,6 +1,7 @@
 import { GenericFunc } from "./GenericFunc";
+import { TimeSpan } from "./TimeSpan";
 
-export class Signal<T extends any[]> {
+export class Signal<T extends any[] = []> {
     private listeners: GenericFunc<T>[] = [];
 
     isConnected(func: GenericFunc<T>): boolean {
@@ -39,6 +40,14 @@ export class Signal<T extends any[]> {
         const res: Signal<[Event]> = new Signal();
 
         target.addEventListener(event, res.emit);
+
+        return res;
+    }
+
+    static createFromTimeout(timeout: TimeSpan | number): Signal {
+        const res: Signal = new Signal();
+
+        setTimeout(res.emit, timeout instanceof TimeSpan ? timeout.milliseconds : timeout);
 
         return res;
     }
