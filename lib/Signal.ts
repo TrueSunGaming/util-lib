@@ -1,5 +1,6 @@
 import { GenericFunc } from "./GenericFunc";
 import { TimeSpan } from "./TimeSpan";
+import { SignalOnce } from "./SignalOnce";
 
 export class Signal<T extends any[] = []> {
     private m_Emitted = false;
@@ -76,5 +77,9 @@ export class Signal<T extends any[] = []> {
 
     get lastValue(): T | null {
         return this.m_LastValue;
+    }
+
+    static onLoad(target: EventTarget = window): SignalOnce<[Event]> {
+        return SignalOnce.createFromEvent(target, "load");
     }
 }
