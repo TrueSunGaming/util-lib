@@ -2,14 +2,17 @@ import { GenericFunc } from "./GenericFunc";
 import { TimeSpan } from "./TimeSpan";
 
 export class Signal<T extends any[] = []> {
+    private m_Emitted = false;
     private listeners: GenericFunc<T>[] = [];
 
     isConnected(func: GenericFunc<T>): boolean {
         return this.listeners.includes(func);
     }
 
-    connect(func: GenericFunc<T>): void {
+    connect(func: GenericFunc<T>, noWarn = false): void {
         this.listeners.push(func);
+
+        if (!noWarn && !func.name) console.warn("Anonymous functions cannot be disconnected or have their connection checked.");
     }
 
     disconnect(func: GenericFunc<T>): void {
@@ -20,19 +23,23 @@ export class Signal<T extends any[] = []> {
 
     emit(...data: T): void {
         for (const i of this.listeners) i(...data);
+
+        this.m_Emitted = true;
     }
 
-    wait(timeout = -1): Promise<T> {
+    wait(timeout?: TimeSpan | number): Promise<T> {
+        const timeoutMS: number = TimeSpan.numerify(timeout ?? -1);
+
         return new Promise((res, rej) => {
             const fn: GenericFunc<T> = (...args: T) => res(args)
             this.connect(fn);
 
-            if (timeout < 0) return;
+            if (timeoutMS < 0) return;
 
             setTimeout(() => {
                 this.disconnect(fn);
                 rej("Signal timed out");
-            }, timeout);
+            }, timeoutMS);
         });
     }
 
@@ -59,5 +66,9 @@ export class Signal<T extends any[] = []> {
         promise.catch((r) => res.emit(fallbackValue ?? null, r));
 
         return res;
+    }
+
+    get emitted(): boolean {
+        return this.m_Emitted;
     }
 }

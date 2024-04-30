@@ -160,4 +160,8 @@ export class TimeSpan {
     toString(): string {
         return this.string;
     }
+
+    static numerify(time: TimeSpan | number): number {
+        return time instanceof TimeSpan ? time.milliseconds : time;
+    }
 }
