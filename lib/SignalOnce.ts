@@ -11,11 +11,11 @@ export class SignalOnce<T extends any[] = []> extends Signal<T> {
 
         return super.wait(timeout);
     }
-
+    
     static createFromSignal<T extends any[] = []>(signal: Signal<T>): SignalOnce<T> {
         const res: SignalOnce<T> = new SignalOnce();
 
-        signal.connect(res.emit);
+        signal.connect((...data: T) => res.emit(...data));
 
         return res;
     }
