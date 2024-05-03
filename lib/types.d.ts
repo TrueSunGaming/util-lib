@@ -1,0 +1,1 @@
+export type ValueOf<T> = T extends { [K in keyof T]: infer V } ? V : never;

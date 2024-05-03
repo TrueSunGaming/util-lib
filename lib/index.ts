@@ -1,3 +1,4 @@
+export type * from "./types";
 export type * from "./GenericFunc";
 export * from "./Signal";
 export * from "./SignalOnce";
