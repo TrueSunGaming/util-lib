@@ -1,1 +1,0 @@
-export type GenericFunc<I extends any[] = [], R = void> = (...args: I) => R;

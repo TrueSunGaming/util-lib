@@ -1,4 +1,4 @@
-import { GenericFunc } from "./GenericFunc";
+import { GenericFunc } from "./types";
 import { TimeSpan } from "./TimeSpan";
 
 export class Signal<T extends any[] = []> {

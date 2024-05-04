@@ -1,5 +1,5 @@
 import { DerivedState } from "./DerivedState";
-import { GenericFunc } from "./GenericFunc";
+import { GenericFunc } from "./types";
 import { Signal } from "./Signal";
 import { MaybeState, State, StateExtract } from "./State";
 

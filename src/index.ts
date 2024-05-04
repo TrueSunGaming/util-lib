@@ -1,17 +1,39 @@
-import { State, DerivedState, ReactiveArray } from "../lib";
+import { Factory } from "../lib";
 
-const arr: ReactiveArray<number> = new ReactiveArray([] as number[]);
-arr.changed.connect(console.log);
+interface Common {
+    say(): void;
+}
 
-const state: State<number> = new State(1);
-const derived: DerivedState<number, [number]> = new DerivedState((x) => x + 1, [state]);
+class A implements Common {
+    private msg: string;
 
-console.log("push");
-arr.push(state);
-console.log("push");
-arr.push(69);
-console.log("unshift");
-arr.unshift(derived);
+    constructor(msg: string) {
+        this.msg = msg;
+    }
 
-console.log("increment");
-state.value += 1;
+    say(): void {
+        console.log(this.msg, "from A");
+    }
+}
+
+class B implements Common {
+    private msg: string;
+
+    constructor(msg: string) {
+        this.msg = msg;
+    }
+
+    say(): void {
+        console.log(this.msg, "from B");
+    }
+}
+
+const factory: Factory<string, Common, [string]> = new Factory<string, Common, [string]>([
+    ["a", A],
+    ["b", B]
+]);
+
+const a: A = factory.create("a", "hello");
+const b: B = factory.create("b", "hello");
+a.say();
+b.say();
