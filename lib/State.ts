@@ -35,6 +35,14 @@ export class State<T> {
     unbind(fn: GenericFunc<[T]>): void {
         this.changed.disconnect(fn);
     }
+
+    get string(): string {
+        return String(this.value);
+    }
+
+    toString(): string {
+        return this.string;
+    }
 }
 
 export type MapState<T extends any[]> = {
