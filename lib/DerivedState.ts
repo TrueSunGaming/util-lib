@@ -11,7 +11,7 @@ export class DerivedState<T, I extends any[]> extends State<T> {
         this.derivation = derivation;
         this.states = states;
 
-        for (const i of states) i.changed.connect(() => this.triggerReactivity(), true);
+        for (const i of states) i.changed.connect(() => this.triggerReactivity());
     }
 
     private get nextValue(): T {

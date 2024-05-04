@@ -31,3 +31,6 @@ export class State<T> {
 export type MapState<T extends any[]> = {
     [I in keyof T]: State<T[I]>;
 };
+
+export type MaybeState<T> = T | State<T>;
+export type StateExtract<T extends State<any>> = T extends State<infer U> ? U : T;

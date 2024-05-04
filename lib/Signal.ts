@@ -10,10 +10,10 @@ export class Signal<T extends any[] = []> {
         return this.listeners.includes(func);
     }
 
-    connect(func: GenericFunc<T>, noWarn = false): void {
+    connect(func: GenericFunc<T>): GenericFunc<T> {
         this.listeners.push(func);
 
-        if (!noWarn && !func.name) console.warn("Anonymous functions cannot be disconnected or have their connection checked.");
+        return func;
     }
 
     disconnect(func: GenericFunc<T>): void {
