@@ -1,4 +1,5 @@
 import { Signal } from "./Signal";
+import { GenericFunc } from "./types";
 
 export class State<T> {
     private m_Value: T;
@@ -25,6 +26,14 @@ export class State<T> {
 
     setValueNonReactive(val: T): void {
         this.m_Value = val;
+    }
+
+    bind(fn: GenericFunc<[T]>): GenericFunc<[T]> {
+        return this.changed.connect(fn);
+    }
+
+    unbind(fn: GenericFunc<[T]>): void {
+        this.changed.disconnect(fn);
     }
 }
 

@@ -1,4 +1,4 @@
-import { GenericFunc } from "./GenericFunc";
+import { GenericFunc } from "./types";
 import { MapState, State } from "./State";
 
 export class DerivedState<T, I extends any[]> extends State<T> {
@@ -11,7 +11,7 @@ export class DerivedState<T, I extends any[]> extends State<T> {
         this.derivation = derivation;
         this.states = states;
 
-        for (const i of states) i.changed.connect(() => this.triggerReactivity());
+        for (const i of states) i.bind(() => this.triggerReactivity());
     }
 
     private get nextValue(): T {

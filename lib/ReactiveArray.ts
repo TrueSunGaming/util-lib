@@ -39,13 +39,13 @@ export class ReactiveArray<T> extends State<T[]> {
     private connectReactivity(idx: number, value: MaybeState<T>): T {
         if (value instanceof State) {
             const connection: number = this.activeConnections.findIndex((v) => v[0].value == idx);
-            if (connection != -1) value.changed.disconnect(this.activeConnections[connection][1]);
+            if (connection != -1) value.unbind(this.activeConnections[connection][1]);
 
             const posState: State<number | null> = this.createPositionState(idx);
             
             this.activeConnections.push([
                 posState,
-                value.changed.connect((v) => {
+                value.bind((v) => {
                     if (posState.value != null) this.set(posState.value, v)
                 })
             ]);
