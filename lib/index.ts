@@ -6,3 +6,5 @@ export * from "./State";
 export * from "./DerivedState";
 export * from "./ReactiveArray";
 export * from "./Factory";
+export * from "./Matrix";
+export * from "./Result";
