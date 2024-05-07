@@ -62,4 +62,14 @@ export class Result<T, E> {
     get successful(): boolean {
         return this.data.type == ResultType.Success;
     }
+
+    unwrap(): T {
+        if (!this.data.value) throw new Error("Failed to unwrap result with error: " + this.data.error);
+
+        return this.data.value;
+    }
+
+    unwrapOrNull(): T | null {
+        return this.data.value;
+    }
 }
