@@ -1,18 +1,31 @@
+import { dotProduct } from "./dotProduct";
+import { padArray } from "./padArray";
+
 export class Matrix {
     private values: number[][] = [];
 
     constructor(rows: number, cols: number) {
-        const valid: [boolean, string] = Matrix.isValidSize(rows, cols);
-        if (!valid[0]) throw new Error(valid[1]);
+        const validMessage: string = Matrix.isValidSize(rows, cols);
+        if (validMessage != "") throw new Error(validMessage);
 
         this.rows = rows;
         this.cols = cols;
     }
 
-    static isValidSize(rows: number, cols: number): [boolean, string] {
-        if (rows % 1 != 0 || cols % 1 != 0) return [false, "Matrix rows and columns must be integers"];
+    *[Symbol.iterator]() {
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                yield [this.values[r][c], r, c];
+            }
+        }
+    }
 
-        return [true, ""];
+    static isValidSize(rows: number, cols: number): string {
+        if (rows % 1 != 0 || cols % 1 != 0) return "Matrix rows and columns must be integers";
+        if (rows < 0 || cols < 0) return "Matrix rows and columns must be non-negative";
+        if ((rows == 0 && cols != 0) || (cols == 0 && rows != 0)) return "Matrix rows and columns must be non-zero unless creating a 0x0 matrix";
+
+        return "";
     }
 
     static isValidData(data: number[][]): boolean {
@@ -25,11 +38,16 @@ export class Matrix {
     }
 
     private static getMatrixDataSize(data: number[][]): [number, number] {
+        if (!Matrix.isValidData(data)) throw new Error("Invalid matrix data: column length is not constant");
+
         return [data.length, data[0]?.length ?? 0];
     }
 
-    static fromValues(): Matrix {
+    static fromValues(values: number[][]): Matrix {
+        const res: Matrix = new Matrix(...Matrix.getMatrixDataSize(values));
+        res.values = structuredClone(values);
 
+        return res;
     }
 
     get rows(): number {
@@ -96,20 +114,45 @@ export class Matrix {
         while (this.cols < cols) this.addColumnEnd();
     }
 
-    set(x: number, y: number, value: number): void {
-        if (x < 0 || y < 0) throw new Error("Matrix coordinates must be greater than zero");
-        if (x >= this.rows || y >= this.cols) throw new Error("Matrix coordinates must be less than the matrix dimensions");
-        if (x % 1 != 0 || y % 1 != 0) throw new Error("Matrix coordinates must be an integer");
-
-        this.values[x][y] = value;
+    private handleInvalidPosition(row: number, col: number): void {
+        if (row < 0 || col < 0) throw new Error("Matrix coordinates must be greater than zero");
+        if (row >= this.rows || col >= this.cols) throw new Error("Matrix coordinates must be less than the matrix dimensions");
+        if (row % 1 != 0 || col % 1 != 0) throw new Error("Matrix coordinates must be an integer");
     }
 
-    get(x: number, y: number): number {
-        if (x < 0 || y < 0) throw new Error("Matrix coordinates must be greater than zero");
-        if (x >= this.rows || y >= this.cols) throw new Error("Matrix coordinates must be less than the matrix dimensions");
-        if (x % 1 != 0 || y % 1 != 0) throw new Error("Matrix coordinates must be an integer");
+    set(row: number, col: number, value: number): void {
+        this.handleInvalidPosition(row, col);
 
-        return this.values[x][y]
+        this.values[row][col] = value;
+    }
+
+    get(row: number, col: number): number {
+        this.handleInvalidPosition(row, col);
+
+        return this.values[row][col]
+    }
+
+    getRow(row: number): number[] {
+        this.handleInvalidPosition(row, 0);
+
+        return structuredClone(this.values[row]);
+    }
+
+    setRow(row: number, data: number[]): void {
+        this.handleInvalidPosition(row, 0);
+        this.values[row] = padArray(data, this.cols, 0);
+    }
+
+    getColumn(column: number): number[] {
+        this.handleInvalidPosition(0, column);
+
+        return this.values.map((v) => v[column]);
+    }
+
+    setColumn(column: number, data: number[]): void {
+        this.handleInvalidPosition(0, column);
+
+        for (let i = 0; i < this.rows; i++) this.values[i][column] = data[i] ?? 0;
     }
 
     sameSize(other: Matrix): boolean {
@@ -118,5 +161,60 @@ export class Matrix {
 
     canMultiply(other: Matrix): boolean {
         return this.cols == other.rows;
+    }
+
+    get negated(): Matrix {
+        const res: Matrix = structuredClone(this);
+
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                res.values[r][c] *= -1;
+            }
+        }
+
+        return res;
+    }
+
+    add(other: Matrix): Matrix {
+        if (!this.sameSize(other)) throw new Error("Matrix sizes must be the same");
+
+        const res: Matrix = structuredClone(this);
+
+        for (const [_v, r, c] of res) {
+            res.values[r][c] += other.values[r][c];
+        }
+
+        return res;
+    }
+
+    sub(other: Matrix): Matrix {
+        return this.add(other.negated);
+    }
+
+    get transposed(): Matrix {
+        const res: Matrix = new Matrix(this.cols, this.rows);
+        for (let c = 0; c < this.rows; c++) res.setColumn(c, this.getRow(c));
+
+        return res;
+    }
+
+    scale(other: number): Matrix {
+        const res: Matrix = structuredClone(this);
+
+        for (const [_v, r, c] of res) res.values[r][c] *= other;
+
+        return res;
+    }
+
+    mul(other: Matrix): Matrix {
+        const res: Matrix = new Matrix(this.rows, other.cols);
+
+        for (let r = 0; r < res.rows; r++) {
+            for (let c = 0; c < res.cols; c++) {
+                res.set(r, c, dotProduct(this.getRow(r), other.getColumn(c)));
+            }
+        }
+
+        return res;
     }
 }

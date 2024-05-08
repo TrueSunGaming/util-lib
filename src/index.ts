@@ -1,39 +1,16 @@
-import { Factory } from "../lib";
+import { Matrix } from "../lib";
 
-interface Common {
-    say(): void;
-}
-
-class A implements Common {
-    private msg: string;
-
-    constructor(msg: string) {
-        this.msg = msg;
-    }
-
-    say(): void {
-        console.log(this.msg, "from A");
-    }
-}
-
-class B implements Common {
-    private msg: string;
-
-    constructor(msg: string) {
-        this.msg = msg;
-    }
-
-    say(): void {
-        console.log(this.msg, "from B");
-    }
-}
-
-const factory: Factory<string, Common, [string]> = new Factory<string, Common, [string]>([
-    ["a", A],
-    ["b", B]
+const a: Matrix = Matrix.fromValues([
+    [1, 0, 1],
+    [2, 1, 1],
+    [0, 1, 1],
+    [1, 1, 2]
 ]);
 
-const a: A = factory.create("a", "hello");
-const b: B = factory.create("b", "hello");
-a.say();
-b.say();
+const b: Matrix = Matrix.fromValues([
+    [1, 2, 1],
+    [2, 3, 1],
+    [4, 2, 2]
+]);
+
+console.log(a.mul(b).transposed);

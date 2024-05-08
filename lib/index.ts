@@ -8,3 +8,4 @@ export * from "./ReactiveArray";
 export * from "./Factory";
 export * from "./Matrix";
 export * from "./Result";
+export * from "./dotProduct";
