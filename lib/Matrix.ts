@@ -1,3 +1,4 @@
+import { Rotation } from "./Rotation";
 import { dotProduct } from "./dotProduct";
 import { padArray } from "./padArray";
 
@@ -48,6 +49,83 @@ export class Matrix {
         res.values = structuredClone(values);
 
         return res;
+    }
+
+    static rotation2D(rot: Rotation): Matrix {
+        return Matrix.fromValues([
+            [Math.cos(rot.rad), -Math.sin(rot.rad)],
+            [Math.sin(rot.rad), Math.cos(rot.rad)]
+        ]);
+    }
+
+    static rotation3Dx(rot: Rotation): Matrix {
+        return Matrix.fromValues([
+            [1, 0, 0],
+            [0, Math.cos(rot.rad), -Math.sin(rot.rad)],
+            [0, Math.sin(rot.rad), Math.cos(rot.rad)]
+        ]);
+    }
+
+    static rotation3Dy(rot: Rotation): Matrix {
+        return Matrix.fromValues([
+            [Math.cos(rot.rad), 0, Math.sin(rot.rad)],
+            [0, 1, 0],
+            [-Math.sin(rot.rad), 0, Math.cos(rot.rad)]
+        ]);
+    }
+
+    static rotation3Dz(rot: Rotation): Matrix {
+        return Matrix.fromValues([
+            [Math.cos(rot.rad), -Math.sin(rot.rad), 0],
+            [Math.sin(rot.rad), Math.cos(rot.rad), 0],
+            [0, 0, 1]
+        ]);
+    }
+
+    static rotation3D(x: Rotation, y: Rotation, z: Rotation): Matrix {
+        const a: number = x.rad;
+        const b: number = y.rad;
+        const c: number = z.rad;
+
+        const sa: number = Math.sin(a);
+        const sb: number = Math.sin(b);
+        const sc: number = Math.sin(c);
+        const ca: number = Math.cos(a);
+        const cb: number = Math.cos(b);
+        const cc: number = Math.cos(c);
+
+        return Matrix.fromValues([
+            [
+                cb * cc,
+                sa * sb * cc - ca * sc,
+                ca * sb * cc + sa * sc
+            ],
+            [
+                cb * sc,
+                sa * sb * sc + ca * cc,
+                ca * sb * sc - sa * sc
+            ],
+            [
+                -sb,
+                sa * cb,
+                ca * cb
+            ]
+        ])
+    }
+
+    static scale2D(x: number, y: number): Matrix {
+        return Matrix.fromValues([
+            [x, 0],
+            [0, y]
+        ]);
+    }
+
+    static scale3D(x: number, y: number, z: number): Matrix {
+        return Matrix.fromValues([
+            [x, 0, 0],
+            [0, y, 0],
+            [0, 0, z]
+        ]);
     }
 
     get rows(): number {
