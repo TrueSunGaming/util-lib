@@ -9,3 +9,4 @@ export * from "./Factory";
 export * from "./Matrix";
 export * from "./Result";
 export * from "./dotProduct";
+export * from "./Rotation";
