@@ -1,16 +1,3 @@
-import { Matrix } from "../lib";
+import { Rotation, clampAngle } from "../lib";
 
-const a: Matrix = Matrix.fromValues([
-    [1, 0, 1],
-    [2, 1, 1],
-    [0, 1, 1],
-    [1, 1, 2]
-]);
-
-const b: Matrix = Matrix.fromValues([
-    [1, 2, 1],
-    [2, 3, 1],
-    [4, 2, 2]
-]);
-
-console.log(a.mul(b).transposed);
+console.log(clampAngle(Rotation.fromDeg(-455)).deg);
