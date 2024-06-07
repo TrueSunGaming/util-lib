@@ -1,13 +1,13 @@
-import { Constructor, Mappable } from "./types";
+import { Mappable } from "./types";
 
-export class Factory<K, O = any, A extends any[] = []> {
-    private registry: Map<K, Constructor<O, A>> = new Map();
+export class Factory<K, V> {
+    private registry: Map<K, V> = new Map();
 
-    constructor(map?: Mappable<K, Constructor<O, A>>) {
+    constructor(map?: Mappable<K, V>) {
         if (map) this.registry = new Map(map);
     }
 
-    register(key: K, value: Constructor<O, A>) {
+    register(key: K, value: V) {
         this.registry.set(key, value);
     }
 
@@ -15,10 +15,9 @@ export class Factory<K, O = any, A extends any[] = []> {
         return this.registry.has(key);
     }
 
-    create<V extends O = O>(key: K, ...args: A): V {
-        if (!this.isRegistered(key)) throw new Error(`No registered constructor for key: ${key}`);
+    create<T extends V = V>(key: K): T {
+        if (!this.isRegistered(key)) throw new Error(`Key not found in Factory registry: ${key}`);
 
-        const con: Constructor<V, A> = this.registry.get(key)! as Constructor<V, A>;
-        return new con(...args);
+        return this.registry.get(key)! as T;
     }
 }
