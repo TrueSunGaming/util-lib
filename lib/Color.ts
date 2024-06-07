@@ -1,12 +1,12 @@
 import { clamp } from "./clamp";
 
 export class Color {
-    private m_R8: number;
-    private m_G8: number;
-    private m_B8: number;
-    private m_A8: number;
+    private m_R8: number = 0;
+    private m_G8: number = 0;
+    private m_B8: number = 0;
+    private m_A8: number = 255;
 
-    constructor(r8: number, g8: number, b8: number, a8: number = 255) {
+    constructor(r8 = 0, g8 = 0, b8 = 0, a8 = 255) {
         this.r8 = r8;
         this.g8 = g8;
         this.b8 = b8;
