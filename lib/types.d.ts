@@ -6,3 +6,9 @@ export type Mappable<K, V> = Map<K, V> | [K, V][];
 export interface Constructor<T, A extends any[]> {
     new (...args: A): T;
 }
+
+declare global {
+    interface Array<T> {
+        equal(other: Array<T>): boolean;
+    }
+}

@@ -15,3 +15,5 @@ export * from "./Rotation";
 export * from "./clamp";
 export * from "./Color";
 export * from "./padArray"
+export * from "./MultiMap";
+export * from "./arrayEqual";
